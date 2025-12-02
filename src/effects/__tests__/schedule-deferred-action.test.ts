@@ -263,7 +263,13 @@ describe('Schedule Deferred Action Effect - onTriggerEvent', () => {
                     }
                 })
             }),
-            effects: expect.any(Object)
+            effects: expect.any(Object),
+            outputs: {
+                deferredAction: {
+                    taskId: 'test-uuid-123',
+                    taskGroup: undefined
+                }
+            }
         });
     });
 
@@ -324,7 +330,13 @@ describe('Schedule Deferred Action Effect - onTriggerEvent', () => {
                     }
                 })
             }),
-            effects: expect.any(Object)
+            effects: expect.any(Object),
+            outputs: {
+                deferredAction: {
+                    taskId: 'test-uuid-123',
+                    taskGroup: undefined
+                }
+            }
         });
     });
 
