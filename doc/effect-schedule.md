@@ -30,12 +30,18 @@ It's also important to understand when _not_ to use this plugin. Although this p
 When someone raids your channel, wait 15 seconds before sending a thank-you message so chat can settle, while still processing other effects associated with the raid. You don't need intricate timing of the chat message within your effect list.
 
 1. Create a Firebot event for **Incoming Raid**
+
 2. Add a **Schedule Deferred Action**
-    a. Set the delay to 15 seconds
-    b. Add a chat message effect with the thank-you message
+
+   a. Set the delay to 15 seconds
+
+   b. Add a chat message effect with the thank-you message
+
 3. Add remaining effects to the event (playing sound, visual effects, etc.)
 
 Now, all of your raid handling effects will proceed in sequence, and the chat message will be posted after 15 seconds.
+
+Note: The Firebot equivalent is to create a preset effect list with a "Delay" for 15 seconds effect and a chat effect, and then to call that preset effect list with the "Don't wait for effects to finish" option checked. Using the deferred action plugin simplifies this considerably.
 
 ### Cooldown for Conditional Redemption
 
@@ -52,6 +58,7 @@ You can manage cooldowns manually with this plugin by configuring the event list
 3. **Schedule Deferred Action**:
 
     a. Set the delay to 120 seconds
+
     b. Add a **Update Channel Reward** to unpause the reward
 
 4. Add effect(s) to perform the TTS.
