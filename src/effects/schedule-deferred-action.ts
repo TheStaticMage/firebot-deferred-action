@@ -130,7 +130,7 @@ export function registerScheduleDeferredActionEffect(taskManager: TaskManager): 
             const effects = effectList.list;
             const effectId = (event as any)?.effect?.id as string | undefined;
 
-            const createTriggerWithMetadata = (taskId: string, taskGroup?: string) => ({
+            const createTriggerWithMetadata = (taskId: string, taskGroup?: string): Trigger => ({
                 ...event.trigger,
                 metadata: {
                     ...(event.trigger?.metadata ?? {}),
@@ -144,10 +144,25 @@ export function registerScheduleDeferredActionEffect(taskManager: TaskManager): 
             });
 
             const executeEffects = async (taskId: string, taskGroup?: string) => {
+                const { outputs = {} } = event ?? {};
+
+                const enrichedOutputs = {
+                    ...(outputs ?? {}),
+                    deferredAction: {
+                        taskId,
+                        taskGroup
+                    }
+                };
+
+                const clonedOutputs = typeof structuredClone === 'function'
+                    ? structuredClone(enrichedOutputs)
+                    : JSON.parse(JSON.stringify(enrichedOutputs));
+
                 try {
                     await firebot.modules.effectRunner.processEffects({
                         trigger: createTriggerWithMetadata(taskId, taskGroup),
-                        effects: effectList
+                        effects: effectList,
+                        outputs: clonedOutputs
                     });
                 } catch (error) {
                     logger.error(`Failed to execute deferred effect list: ${String(error)}`);
