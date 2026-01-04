@@ -21,10 +21,12 @@ export function registerScheduleDeferredActionEffect(taskManager: TaskManager): 
         },
         optionsTemplate: `
             <eos-container header="Delay">
-                <div class="input-group">
-                    <span class="input-group-addon">Seconds</span>
-                    <input type="number" class="form-control" ng-model="effect.delaySeconds" min="0" required>
-                </div>
+                <firebot-input
+                    input-title="Seconds"
+                    model="effect.delaySeconds"
+                    placeholder-text="Enter delay in seconds"
+                    required
+                ></firebot-input>
             </eos-container>
 
             <eos-container header="Comment (Optional)">
@@ -71,20 +73,22 @@ export function registerScheduleDeferredActionEffect(taskManager: TaskManager): 
             </eos-container>
         `,
         getDefaultLabel: (effect: ScheduleDeferredActionEffect) => {
-            const delayStr = effect.delaySeconds == null ? '?' : `${effect.delaySeconds}s`;
+            const delayValue = effect.delaySeconds;
+            const resolvedDelay = delayValue == null ? '' : String(delayValue).trim();
+            const parsedDelay = Number.parseFloat(resolvedDelay);
+            const delayStr = resolvedDelay !== '' && Number.isFinite(parsedDelay)
+                ? (parsedDelay <= 0 ? 'Immediate' : `${parsedDelay}s`)
+                : '';
             const effectCount = effect.effectList?.list?.length || 0;
             const comment = effect.userComment || "";
-            return `${delayStr} - ${comment} (${effectCount} effect${effectCount === 1 ? '' : 's'})`;
+            const delayPrefix = delayStr ? `${delayStr} - ` : '';
+            return `${delayPrefix}${comment} (${effectCount} effect${effectCount === 1 ? '' : 's'})`;
         },
         optionsValidator: (effect: ScheduleDeferredActionEffect): string[] => {
             const errors: string[] = [];
 
-            if (effect.delaySeconds == null || Number.isNaN(effect.delaySeconds)) {
-                errors.push('Delay is required. It must be numeric and >= 0.');
-            }
-
-            if (effect.delaySeconds != null && effect.delaySeconds < 0) {
-                errors.push('Delay must be zero or more seconds.');
+            if (effect.delaySeconds == null || String(effect.delaySeconds).trim() === '') {
+                errors.push('Delay is required.');
             }
 
             const count = effect.effectList?.list?.length ?? 0;
@@ -115,10 +119,13 @@ export function registerScheduleDeferredActionEffect(taskManager: TaskManager): 
         onTriggerEvent: async (event) => {
             const eff = event.effect;
             const triggerDescription = describeTrigger(event.trigger);
+            const resolvedDelay = eff.delaySeconds;
+            const resolvedDelayText = resolvedDelay == null ? '' : String(resolvedDelay).trim();
+            const parsedDelay = Number.parseFloat(resolvedDelayText);
+            const delaySeconds = Number.isFinite(parsedDelay) && parsedDelay >= 0 ? parsedDelay : 0;
 
-            if (eff.delaySeconds == null || eff.delaySeconds < 0) {
-                logger.warn('Schedule Deferred Action: delay must be zero or more seconds');
-                return;
+            if (!Number.isFinite(parsedDelay) || parsedDelay <= 0) {
+                logger.debug(`Schedule Deferred Action: delay resolved to "${resolvedDelayText}". Running immediately.`);
             }
 
             if (!eff.effectList || !eff.effectList.list || eff.effectList.list.length === 0) {
@@ -218,7 +225,7 @@ export function registerScheduleDeferredActionEffect(taskManager: TaskManager): 
             // Schedule the task normally
             const taskGroup = eff.assignToGroup ? eff.taskGroupName : undefined;
             const taskId = taskManager.scheduleTask(
-                eff.delaySeconds,
+                delaySeconds,
                 eff.userComment,
                 effects.length,
                 triggerDescription,
@@ -243,7 +250,7 @@ export function registerScheduleDeferredActionEffect(taskManager: TaskManager): 
 }
 
 export interface ScheduleDeferredActionEffect {
-    delaySeconds: number;
+    delaySeconds: number | string;
     userComment?: string;
     assignToGroup?: boolean;
     taskGroupName?: string;

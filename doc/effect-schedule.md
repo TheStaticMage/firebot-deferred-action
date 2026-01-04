@@ -74,7 +74,7 @@ This sequence implements a cooldown on successful redemptions only.
 ## Quick Start
 
 1. Add the **Schedule Deferred Action** effect anywhere in your command chain or event handler
-2. Enter a delay (minimum 0 seconds)
+2. Enter a delay in seconds. Replace variables are supported.
 3. Add one or more effects to the "Effects to Run" section
 4. Save the command or event
 5. When triggered, your effects will run after the specified delay
@@ -83,9 +83,9 @@ This sequence implements a cooldown on successful redemptions only.
 
 ### Delay (Required)
 
-The number of seconds to wait before running the effects.
+The number of seconds to wait before running the effects. Replace variables are supported.
 
-**Valid range:** 0 seconds or more
+**Valid range:** 0 seconds or more after variable replacement
 
 **Default:** None (required)
 
@@ -93,6 +93,7 @@ The number of seconds to wait before running the effects.
 
 - The actual execution may occur up to a few hundred milliseconds after the specified delay due to system load and JavaScript event loop scheduling.
 - A delay of `0` schedules the task immediately so it runs as soon as Firebot processes queued work.
+- If the resolved delay is not a number or is negative, the effect runs immediately.
 - Scheduled tasks are not persisted to disk, so if Firebot is stopped or restarted, the deferred actions will not execute. Be careful when using very long delays.
 
 ### Comment (Optional)
