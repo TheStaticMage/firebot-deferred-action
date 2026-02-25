@@ -1,7 +1,7 @@
-import { Firebot } from '@crowbartools/firebot-custom-scripts-types';
-import { Trigger } from '@crowbartools/firebot-custom-scripts-types/types/triggers';
-import TaskManager from '../task-manager';
+import type { Firebot } from '@crowbartools/firebot-custom-scripts-types';
+import type { Trigger } from '@crowbartools/firebot-custom-scripts-types/types/triggers';
 import { firebot, logger } from '../main';
+import type TaskManager from '../task-manager';
 
 export function registerScheduleDeferredActionEffect(taskManager: TaskManager): void {
     const effect: Firebot.EffectType<ScheduleDeferredActionEffect> = {
@@ -69,7 +69,13 @@ export function registerScheduleDeferredActionEffect(taskManager: TaskManager): 
             </eos-container>
 
             <eos-container header="Effects to Run">
-                <effect-list effects="effect.effectList" update="effectListUpdated(effects)"></effect-list>
+                <effect-list
+                    effects="effect.effectList"
+                    trigger="{{trigger}}"
+                    trigger-meta="triggerMeta"
+                    update="effectListUpdated(effects)"
+                    modalId="{{modalId}}"
+                ></effect-list>
             </eos-container>
         `,
         getDefaultLabel: (effect: ScheduleDeferredActionEffect) => {
@@ -112,7 +118,7 @@ export function registerScheduleDeferredActionEffect(taskManager: TaskManager): 
                 $scope.effect.newTaskAction = 'schedule';
             }
 
-            $scope.effectListUpdated = function(effects: any) {
+            $scope.effectListUpdated = (effects: any) => {
                 $scope.effect.effectList = effects;
             };
         },

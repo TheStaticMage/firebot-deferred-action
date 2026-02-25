@@ -497,6 +497,52 @@ describe('Schedule Deferred Action Effect - onTriggerEvent', () => {
             })
         );
     });
+
+    it('should preserve original trigger type and metadata when executing deferred effects', async () => {
+        const originalTrigger: Trigger = {
+            type: 'event',
+            metadata: {
+                username: 'streamer',
+                event: { id: 'raid-event', name: 'Raid' }
+            }
+        };
+
+        const event = {
+            effect: {
+                id: 'effect-raid',
+                delaySeconds: 3,
+                userComment: 'Raid effects',
+                effectList: {
+                    list: [{ type: 'test-effect' }]
+                }
+            },
+            trigger: originalTrigger
+        };
+
+        await onTriggerEvent(event);
+
+        expect(mockFirebot.modules.effectRunner.processEffects).not.toHaveBeenCalled();
+
+        jest.advanceTimersByTime(3000);
+        await Promise.resolve();
+
+        expect(mockFirebot.modules.effectRunner.processEffects).toHaveBeenCalledWith({
+            trigger: expect.objectContaining({
+                type: 'event',
+                metadata: expect.objectContaining({
+                    username: 'streamer',
+                    event: { id: 'raid-event', name: 'Raid' },
+                    deferredAction: expect.objectContaining({
+                        effectId: 'effect-raid',
+                        taskId: 'test-uuid-123',
+                        userComment: 'Raid effects'
+                    })
+                })
+            }),
+            effects: expect.any(Object),
+            outputs: expect.any(Object)
+        });
+    });
 });
 
 describe('Schedule Deferred Action Effect - optionsValidator', () => {
