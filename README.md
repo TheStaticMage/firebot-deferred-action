@@ -1,5 +1,11 @@
 # Firebot Deferred Action
 
+## Deprecation Notice
+
+This plugin is not tested with Firebot 5.67 or later and will no longer be developed. No support or updates will be provided. Code and documentation remain archived here for reference purposes only.
+
+## Introduction
+
 This is a [Firebot](https://firebot.app) plugin that schedules effect lists to run after a delay so you can time follow-up actions without writing custom timers.
 
 ## Features
@@ -17,7 +23,7 @@ This is a [Firebot](https://firebot.app) plugin that schedules effect lists to r
 - [Upgrading](/doc/upgrading.md)
 - [Schedule Deferred Action Effect](/doc/effect-schedule.md)
 - [Replace Variables](/doc/variables.md)
-
+<!--
 ## Support
 
 The best way to get help is in my Discord server. Join [The Static Discord](https://discord.gg/HxJbEHH4b4) and visit the `#firebot-deferred-action` channel.
@@ -40,3 +46,4 @@ If you use this on your stream, I would appreciate a shout-out. (Appreciated, bu
 - <https://www.twitch.tv/thestaticmage>
 - <https://kick.com/thestaticmage>
 - <https://youtube.com/@thestaticmagerisk>
+-->
